@@ -78,7 +78,7 @@ document.addEventListener("keyup", (e) => {
       if (wordToday[c] == letter) {
         currCell.classList.add("correct");
         correct += 1;
-      } else if (wordToday.includes(letter) && !uniqueLetters.has(letter)) {
+      } else if (wordToday.includes(letter) && !uniqueLetters.has(letter) && wordToday.indexOf(letter) !== c) {
         currCell.classList.add('present');
         uniqueLetters.add(letter);
       } else {
@@ -96,4 +96,26 @@ document.addEventListener("keyup", (e) => {
       }
     }
   }
-  
+
+  document.getElementById("keyboard-cont").addEventListener("click", (e) => {
+    const target = e.target;
+    
+    if (!target.classList.contains("keyboard-button")) {
+        return;
+    }
+    let key = target.textContent;
+    console.log(key);
+    if (key === "Del") {
+      if (0 < col && col <= width) {
+        col -= 1;
+      }
+      let currCell = document.getElementById(row.toString() + '-' + col.toString());
+      currCell.innerHTML = "";
+    } 
+    if (key === "Enter"){
+      update();
+      row += 1;
+      col = 0;
+    }
+    document.dispatchEvent(new KeyboardEvent("keyup", {'key': key}));
+});

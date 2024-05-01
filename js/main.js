@@ -1,3 +1,18 @@
+import { WORDS } from "./words.js";
+
+const FiveLetterWords = [];
+const words = Object.values(WORDS);
+for (var word of words){
+  if (word.length === 5){
+    FiveLetterWords.push(word);
+  }
+}
+
+let randomedFiveLetterWord = FiveLetterWords[Math.floor(Math.random() * FiveLetterWords.length)];
+let uppercasedRandomedFiveLetterWord = randomedFiveLetterWord.toUpperCase();
+var wordToday = uppercasedRandomedFiveLetterWord;
+console.log(wordToday);
+
 var height = 6;
 var width = 5;
 
@@ -5,8 +20,6 @@ var row = 0;
 var col = 0;
 
 var gameOver = false;
-
-var word = "РОМАН";
 
 window.onload = function() {
   initialize();
@@ -50,33 +63,36 @@ document.addEventListener("keyup", (e) => {
     }
     if (!gameOver && row == height) {
       gameOver = true;
-      document.getElementById('answer').innerText = word;
+      document.getElementById('answer').innerText = wordToday;
     }
   });
 
-function update() {
-  let correct = 0;
-  for (let c = 0; c < width; c++) {
-    let currCell = document.getElementById(row.toString() + "-" + c.toString());
-    let letter = currCell.innerText;
+  function update() {
+    let correct = 0;
+    let uniqueLetters = new Set();
   
-    if (word[c] == letter) {
-      currCell.classList.add("correct");
-      correct += 1;
-    } else if(word.includes(letter)){
-      currCell.classList.add('present');
-    } else {
-      currCell.classList.add('absent');
-    }
+    for (let c = 0; c < width; c++) {
+      let currCell = document.getElementById(row.toString() + "-" + c.toString());
+      let letter = currCell.innerText;
   
-    if (correct == width) {
-      gameOver = true;
-    } if (gameOver == true){
-        setInterval(
-            function(){
-                alert('Перемога, конгретулейшн!');
-            }
-        ,1000);
+      if (wordToday[c] == letter) {
+        currCell.classList.add("correct");
+        correct += 1;
+      } else if (wordToday.includes(letter) && !uniqueLetters.has(letter)) {
+        currCell.classList.add('present');
+        uniqueLetters.add(letter);
+      } else {
+        currCell.classList.add('absent');
+      }
+  
+      if (correct == width) {
+        gameOver = true;
+      }
+  
+      if (gameOver) {
+        setInterval(function() {
+          alert('Перемога, конгретулейшн!');
+        }, 1000);
+      }
     }
   }
-}

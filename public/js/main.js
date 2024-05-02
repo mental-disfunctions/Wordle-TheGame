@@ -1,16 +1,13 @@
-import { WORDS } from "./words.js";
+var wordToday;
 
-const FiveLetterWords = [];
-for (var word of WORDS) {
-  if (word.length === 5) {
-    FiveLetterWords.push(word);
-  }
-}
-
-let randomedFiveLetterWord = FiveLetterWords[Math.floor(Math.random() * FiveLetterWords.length)];
-let uppercasedRandomedFiveLetterWord = randomedFiveLetterWord.toUpperCase();
-var wordToday = uppercasedRandomedFiveLetterWord;
-console.log(wordToday);
+fetch("/getWord", { method: "GET" })
+  .then((response) => {
+    return response.text();
+  })
+  .then((response) => {
+    wordToday = response;
+    console.log(response);
+  });
 
 var height = 6;
 var width = 5;
@@ -40,7 +37,13 @@ document.addEventListener("keyup", (e) => {
   if (gameOver) return;
 
   let typedChar = e.key;
+  let typedWord = "";
 
+  for (let c = 0; c < width; c++) {
+    let currCell = document.getElementById(row.toString() + "-" + c.toString());
+    let letter = currCell.innerText;
+    typedWord += letter;
+  }
   if (/^[а-яґєії']$/i.test(typedChar)) {
     if (col < width) {
       let currCell = document.getElementById(row.toString() + "-" + col.toString());
@@ -55,22 +58,27 @@ document.addEventListener("keyup", (e) => {
     }
     let currCell = document.getElementById(row.toString() + "-" + col.toString());
     currCell.innerHTML = "";
-  } else if (e.code == "Enter") {
-    let typedWord = "";
-
-    for (let c = 0; c < width; c++) {
-      let currCell = document.getElementById(row.toString() + "-" + c.toString());
-      let letter = currCell.innerText;
-      typedWord += letter;
-    }
-
-    if (!FiveLetterWords.includes(typedWord.toLowerCase())) {
-      alert(`Помилка: Слово "${typedWord}" відсутнє у словнику. Введіть слово, яке є в словнику.`);
-      return;
-    }
-    update();
-    row += 1;
-    col = 0;
+  } else if (e.code == "Enter" && typedWord.length == 5) {
+    fetch(`/isIncluded?word=${typedWord.toLowerCase()}`, { method: "GET" })
+      .then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        return JSON.parse(response);
+      })
+      .then((json) => {
+        console.log(json);
+        if (json.isInDict == false) {
+          alert(
+            `Помилка: Слово "${typedWord}" відсутнє у словнику. Введіть слово, яке є в словнику.`
+          );
+          return;
+        } else {
+          update(json);
+          row += 1;
+          col = 0;
+        }
+      });
   }
   if (!gameOver && row == height) {
     gameOver = true;
@@ -78,7 +86,7 @@ document.addEventListener("keyup", (e) => {
   }
 });
 
-function update() {
+function update(obj) {
   let correct = 0;
   let uniqueLetters = new Set();
 

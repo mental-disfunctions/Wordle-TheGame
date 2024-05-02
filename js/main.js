@@ -57,6 +57,18 @@ document.addEventListener("keyup", (e) => {
       let currCell = document.getElementById(row.toString() + '-' + col.toString());
       currCell.innerHTML = "";
     } else if (e.code == "Enter") {
+    let typedWord = '';
+  
+    for (let c = 0; c < width; c++) {
+      let currCell = document.getElementById(row.toString() + "-" + c.toString());
+      let letter = currCell.innerText;
+      typedWord += letter;
+    }
+  
+    if (!FiveLetterWords.includes(typedWord.toLowerCase())) {
+      alert(`Помилка: Слово "${typedWord}" відсутнє у словнику. Введіть слово, яке є в словнику.`);
+      return;
+    };
       update();
       row += 1;
       col = 0;
@@ -66,7 +78,6 @@ document.addEventListener("keyup", (e) => {
       document.getElementById('answer').innerText = wordToday;
     }
   });
-
   function update() {
     let correct = 0;
     let uniqueLetters = new Set();
@@ -90,7 +101,7 @@ document.addEventListener("keyup", (e) => {
       }
   
       if (gameOver) {
-        setInterval(function() {
+        setInterval(function () {
           alert('Перемога, конгретулейшн!');
         }, 1000);
       }
@@ -104,7 +115,6 @@ document.addEventListener("keyup", (e) => {
         return;
     }
     let key = target.textContent;
-    console.log(key);
     if (key === "Del") {
       if (0 < col && col <= width) {
         col -= 1;
@@ -113,6 +123,18 @@ document.addEventListener("keyup", (e) => {
       currCell.innerHTML = "";
     } 
     if (key === "Enter"){
+      let typedWord = '';
+  
+    for (let c = 0; c < width; c++) {
+      let currCell = document.getElementById(row.toString() + "-" + c.toString());
+      let letter = currCell.innerText;
+      typedWord += letter;
+    }
+  
+    if (!FiveLetterWords.includes(typedWord.toLowerCase())) {
+      alert(`Помилка: Слово "${typedWord}" відсутнє у словнику. Введіть слово, яке є в словнику.`);
+      return;
+    }
       update();
       row += 1;
       col = 0;

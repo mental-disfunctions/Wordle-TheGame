@@ -1,0 +1,22 @@
+{
+  "name": "wordle-thegame",
+  "version": "1.0.0",
+  "description": "lox",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qresgg/Wordle-TheGame.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qresgg/Wordle-TheGame/issues"
+  },
+  "homepage": "https://github.com/qresgg/Wordle-TheGame#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

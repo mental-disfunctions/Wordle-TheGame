@@ -82,10 +82,6 @@ document.addEventListener("keyup", (e) => {
   if (e.code == "Enter" && typedWord.length != 5) {
     alert("Слово має бути з 5 букв!");
   }
-  if (!gameOver && row == height) {
-    gameOver = true;
-    document.getElementById("answer").innerText = wordToday;
-  }
 });
 
 // klava
@@ -93,7 +89,7 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
   const target = e.target;
   let key = target.textContent;
   let typedWord = "";
-  
+
   for (let c = 0; c < width; c++) {
     let currCell = document.getElementById(row.toString() + "-" + c.toString());
     let letter = currCell.innerText;
@@ -110,29 +106,31 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
     currCell.innerHTML = "";
   } else if (key === "Enter") {
     fetch(`/isIncluded?word=${typedWord.toLowerCase()}`, { method: "GET" })
-    .then((response) => {
-      return response.json();
-    })
-    .then((response) => {
-      return JSON.parse(response);
-    })
-    .then((json) => {
-      console.log(json);
-      if (json.isInDict == false) {
-        alert(`Такого слова ${typedWord} немає в словнику`);
-        return;
-      } else {
-        update(json);
-        row += 1;
-        col = 0;
-      }
-    });
+      .then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        return JSON.parse(response);
+      })
+      .then((json) => {
+        console.log(json);
+        if (json.isInDict == false) {
+          alert(`Такого слова ${typedWord} немає в словнику`);
+          return;
+        } else {
+          update(json);
+          row += 1;
+          col = 0;
+        }
+      });
   }
   document.dispatchEvent(new KeyboardEvent("keyup", { key: key }));
 });
 
 function update(obj) {
   let correct = 0;
+  const button = document.querySelectorAll(".keyboard-button");
+  var letterFound = false;
 
   for (let c = 0; c < width; c++) {
     let currCell = document.getElementById(row.toString() + "-" + c.toString());
@@ -141,10 +139,28 @@ function update(obj) {
     if (wordToday[c] == letter) {
       currCell.classList.add("correct");
       correct += 1;
+      button.forEach(function (button) {
+        if (button.textContent == `${letter}`) {
+          button.style.backgroundColor = "#6aaa64";
+          button.style.color = "white";
+        }
+      });
     } else if (wordToday.includes(letter)) {
       currCell.classList.add("present");
+      button.forEach(function (button) {
+        if (button.textContent == `${letter}`) {
+          button.style.backgroundColor = "#c9b458";
+          button.style.color = "white";
+        }
+      });
     } else {
       currCell.classList.add("absent");
+      button.forEach(function (button) {
+        if (button.textContent == `${letter}`) {
+          button.style.backgroundColor = "#787c7e";
+          button.style.color = "white";
+        }
+      });
     }
 
     if (correct == width) {

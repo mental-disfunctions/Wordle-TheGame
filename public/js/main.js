@@ -1,12 +1,12 @@
 var wordToday;
 
-fetch("/getWord", { method: "GET" })
+fetch("/getTodayWord", { method: "GET" })
   .then((response) => {
     return response.text();
   })
   .then((response) => {
     wordToday = response;
-    console.log(response);
+    console.log(wordToday);
   });
 
 var height = 6;
@@ -33,6 +33,7 @@ function initialize() {
   }
 }
 
+// keyups
 document.addEventListener("keyup", (e) => {
   if (gameOver) return;
 
@@ -69,9 +70,7 @@ document.addEventListener("keyup", (e) => {
       .then((json) => {
         console.log(json);
         if (json.isInDict == false) {
-          alert(
-            `Помилка: Слово "${typedWord}" відсутнє у словнику. Введіть слово, яке є в словнику.`
-          );
+          alert(`Такого слова ${typedWord} немає в словнику`);
           return;
         } else {
           update(json);
@@ -80,15 +79,60 @@ document.addEventListener("keyup", (e) => {
         }
       });
   }
+  if (e.code == "Enter" && typedWord.length != 5) {
+    alert("Слово має бути з 5 букв!");
+  }
   if (!gameOver && row == height) {
     gameOver = true;
     document.getElementById("answer").innerText = wordToday;
   }
 });
 
+// klava
+document.getElementById("keyboard-cont").addEventListener("click", (e) => {
+  const target = e.target;
+  let key = target.textContent;
+  let typedWord = "";
+  
+  for (let c = 0; c < width; c++) {
+    let currCell = document.getElementById(row.toString() + "-" + c.toString());
+    let letter = currCell.innerText;
+    typedWord += letter;
+  }
+
+  if (!target.classList.contains("keyboard-button")) {
+    return;
+  } else if (key === "Del") {
+    if (0 < col && col <= width) {
+      col -= 1;
+    }
+    let currCell = document.getElementById(row.toString() + "-" + col.toString());
+    currCell.innerHTML = "";
+  } else if (key === "Enter") {
+    fetch(`/isIncluded?word=${typedWord.toLowerCase()}`, { method: "GET" })
+    .then((response) => {
+      return response.json();
+    })
+    .then((response) => {
+      return JSON.parse(response);
+    })
+    .then((json) => {
+      console.log(json);
+      if (json.isInDict == false) {
+        alert(`Такого слова ${typedWord} немає в словнику`);
+        return;
+      } else {
+        update(json);
+        row += 1;
+        col = 0;
+      }
+    });
+  }
+  document.dispatchEvent(new KeyboardEvent("keyup", { key: key }));
+});
+
 function update(obj) {
   let correct = 0;
-  let uniqueLetters = new Set();
 
   for (let c = 0; c < width; c++) {
     let currCell = document.getElementById(row.toString() + "-" + c.toString());
@@ -97,13 +141,8 @@ function update(obj) {
     if (wordToday[c] == letter) {
       currCell.classList.add("correct");
       correct += 1;
-    } else if (
-      wordToday.includes(letter) &&
-      !uniqueLetters.has(letter) &&
-      wordToday.indexOf(letter) !== c
-    ) {
+    } else if (wordToday.includes(letter)) {
       currCell.classList.add("present");
-      uniqueLetters.add(letter);
     } else {
       currCell.classList.add("absent");
     }
@@ -120,37 +159,3 @@ function update(obj) {
     }
   }
 }
-
-document.getElementById("keyboard-cont").addEventListener("click", (e) => {
-  const target = e.target;
-
-  if (!target.classList.contains("keyboard-button")) {
-    return;
-  }
-  let key = target.textContent;
-  if (key === "Del") {
-    if (0 < col && col <= width) {
-      col -= 1;
-    }
-    let currCell = document.getElementById(row.toString() + "-" + col.toString());
-    currCell.innerHTML = "";
-  }
-  if (key === "Enter") {
-    let typedWord = "";
-
-    for (let c = 0; c < width; c++) {
-      let currCell = document.getElementById(row.toString() + "-" + c.toString());
-      let letter = currCell.innerText;
-      typedWord += letter;
-    }
-
-    if (!FiveLetterWords.includes(typedWord.toLowerCase())) {
-      alert(`Помилка: Слово "${typedWord}" відсутнє у словнику. Введіть слово, яке є в словнику.`);
-      return;
-    }
-    update();
-    row += 1;
-    col = 0;
-  }
-  document.dispatchEvent(new KeyboardEvent("keyup", { key: key }));
-});

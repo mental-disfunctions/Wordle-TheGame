@@ -1,6 +1,7 @@
 const path = require("path");
 const bodyParser = require("body-parser");
 const words = require("./dictionary/words").words;
+const wordToday = require("./dictionary/todaywords").todayword;
 var word;
 
 const express = require("express");
@@ -9,12 +10,11 @@ const port = process.env.PORT || 3001;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
-app.get("/getWord", (request, response, next) => {
-  let randomedWords = words[Math.floor(Math.random() * words.length)];
+app.get("/getTodayWord", (request, response, next) => {
+  let randomedWords = wordToday[Math.floor(Math.random() * wordToday.length)];
   let uppercasedWords = randomedWords.toUpperCase();
-  var wordToday = uppercasedWords;
   word = uppercasedWords;
-  response.send(wordToday);
+  response.send(word);
 });
 app.get("/isIncluded", (request, response, next) => {
     response.json(JSON.stringify({

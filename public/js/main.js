@@ -130,22 +130,27 @@ document.getElementById("keyboard-cont").addEventListener("click", (e) => {
 function update(obj) {
   let correct = 0;
   const button = document.querySelectorAll(".keyboard-button");
-  var letterFound = false;
+  const uniqueLetters = [];
 
   for (let c = 0; c < width; c++) {
     let currCell = document.getElementById(row.toString() + "-" + c.toString());
     let letter = currCell.innerText;
 
-    if (wordToday[c] == letter) {
+    if (wordToday[c] === letter) {
       currCell.classList.add("correct");
       correct += 1;
+      if (!uniqueLetters.includes(letter)) {
+        uniqueLetters.push(letter);
+        console.log(uniqueLetters);
+      }
       button.forEach(function (button) {
         if (button.textContent == `${letter}`) {
           button.style.backgroundColor = "#6aaa64";
           button.style.color = "white";
         }
       });
-    } else if (wordToday.includes(letter)) {
+    } else if (wordToday.includes(letter) && !uniqueLetters.includes(letter)) {
+      console.log(uniqueLetters.includes(letter));
       currCell.classList.add("present");
       button.forEach(function (button) {
         if (button.textContent == `${letter}`) {
@@ -153,6 +158,7 @@ function update(obj) {
           button.style.color = "white";
         }
       });
+      uniqueLetters.push(letter);
     } else {
       currCell.classList.add("absent");
       button.forEach(function (button) {
@@ -166,12 +172,12 @@ function update(obj) {
     if (correct == width) {
       gameOver = true;
     }
+  }
 
-    if (gameOver) {
-      setInterval(function () {
-        alert("Перемога, конгретулейшн!");
-        location.reload();
-      }, 1000);
-    }
+  if (gameOver) {
+    setInterval(function () {
+      alert("Перемога, конгретулейшн!");
+      location.reload();
+    }, 1000);
   }
 }

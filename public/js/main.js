@@ -6,6 +6,9 @@ fetch("/getTodayWord", { method: "GET" })
   })
   .then((response) => {
     wordToday = response;
+    if (wordToday === "путін"){
+      alert('малорос їбаний')
+    }
     console.log(wordToday);
   });
 
